@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <title>Netease Music Download Extension</title>
         <script src="https://static.ouorz.com/moment.js"></script>
         <script src="https://static.ouorz.com/vue.min.js"></script>
@@ -10,19 +11,28 @@
         <script src="https://static.ouorz.com/axios.min.js"></script>
     </head>
     <body>
-    <div id="view" style="padding: 50px 200px;">
+    <div id="view" style="padding: 50px 60px;">
+        <h1 style="margin-top:100px;margin-bottom:0px">网易云音乐<em style="font-size: 1.5rem;font-style: normal;font-weight: 300;color: #999;margin-left: 5px;">音乐下载</em></h1>
+        <p style="font-size: 1.3rem;font-weight: 300;letter-spacing: .6px;color: #66;">Netease Music | Download Extension</p>
         <div style="margin:0 auto;text-align:center">
-            <a-input-search placeholder="输入搜索内容" style="width: 200px" @search="onSearch"/>
+            <a-input-search placeholder="输入搜索曲名" @search="onSearch" enterButton="Search" size="large" />
         </div>
-        <a-row type="flex" v-if="s_search" style="margin-top:100px" :gutter="32">
+        
+        
+        <div v-if="s_search" style="margin-top:30px">
             <a-spin :spinning="spinning">
-            <a-col :span="6" :order="index" v-for="(item,index) in items" style="margin-bottom:20px;">
-                <a-card hoverable style="width: 300px" @click="showModal(item.id)">
-                    <a-card-meta :title="item.name" :description="item.artists[0].name"></a-card-meta>
-                </a-card>
-            </a-col>
+                <a-card title="匹配歌曲">
+            <a-card-grid style="width:25%;textAlign:'left'" v-for="(item,index) in items" @click="showModal(item.id)">
+                <a-card-meta :title="item.name" :description="item.artists[0].name"></a-card-meta>
+            </a-card-grid>
+            </a-card>
             </a-spin>
-        </a-row>
+        </div>
+        
+        
+        
+        
+        
         <a-modal title="歌曲详情" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
             <a-spin :spinning="song_visible">
             <div style="text-align: center;" v-if="song_content">
@@ -36,6 +46,11 @@
             </a-spin>
         </a-modal>
     </div>
+    
+    
+    
+    
+    
         <script>
             var index = new Vue({
                 el:'#view',
@@ -53,14 +68,12 @@
                         song_src : null
                     }
                 },
-                mounted(){
-                },
                 methods : {
                     onSearch : function(key){
                         if(key !== ''){
                             this.s_search = true;
                             this.spinning = true;
-                            axios.get('https://v1.hitokoto.cn/nm/search/'+key.toString())
+                            axios.get('https://v1.hitokoto.cn/nm/search/'+key.toString()+'?limit=32')
                             .then(response=>{
                                 this.items = response.data.result.songs;
                                 this.spinning = false;
@@ -89,18 +102,11 @@
                         this.song = null;
                         this.song_visible = true;
                         this.song_content = false;
-                    },
+                    }
+                
                 }
             })
             
-            function download(name, href) {
-      var a = document.createElement("a"), //创建a标签
-          e = document.createEvent("MouseEvents"); //创建鼠标事件对象
-      e.initEvent("click", false, false); //初始化事件对象
-      a.href = href; //设置下载地址
-      a.download = name; //设置下载文件名
-      a.dispatchEvent(e); //给指定的元素，执行事件click事件
-  }
         </script>
     </body>
 </html>
